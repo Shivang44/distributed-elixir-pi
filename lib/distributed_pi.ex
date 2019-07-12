@@ -10,16 +10,12 @@ defmodule DistributedPi do
 
   def pi(k) do
     D.set_context(%D.Context{D.get_context | precision: div(k * 4, 3)})
-    pi = D.new(0)
-    digit_positions = Enum.reduce(k..0, D.new(0), fn cur, acc ->
-      D.add(acc, kth(cur))
+    Enum.to_list(0..k) |> Enum.reduce(D.new(0), fn x, pi ->
+      D.add(pi, kth(x))
     end)
-
   end
 
   def kth(k) do
-    D.set_context(%D.Context{D.get_context | precision: 50})
-
     coeff = D.from_float(:math.pow(16, k))
     eight_k = D.mult(@d8, D.new(k))
 
