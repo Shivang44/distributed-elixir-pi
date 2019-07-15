@@ -6,7 +6,7 @@ To accomplish this, I created a distributed PI computation cluster in Elixir. It
 
 Then workers that connect to this master node can request work from the master node, compute partial PI results (I used the [Bailey–Borwein–Plouffe](https://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula) formula), and upload them to the master node, which merges the result and outputs PI!
 
-I think this is really cool because all of this is possible with redis or any type of messaging/job queue, since Nodes in elixir can communicate via message passing directly and messages are automatically serialized/desearlized over the network. I learned a ton in this project and highly recommend others to try Elixir!
+I think this is really cool because all of this is possible without redis or any type of messaging/job queue, since Nodes in elixir can communicate via message passing directly and messages are automatically serialized/desearlized over the network. I learned a ton in this project and highly recommend others to try Elixir!
 
 TODO:
 - For higher number of digits of PI, this simply doesn't work. I'm still debugging this. I believe it's due to floating point precision math
