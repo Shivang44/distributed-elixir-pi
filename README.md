@@ -2,7 +2,7 @@
 
 For my hackday project I wanted to learn more about elixir, specifically the distributed/OTP parts of it.
 
-To accomplish this, I created a distributed PI computation cluster in Elixir. It works by creating a master node that accepts the number of digits of PI to compute, and distributed this work to workers in the cluster of nodes. 
+To accomplish this, I created a distributed PI computation cluster in Elixir. It works by creating a master node that accepts the number of digits of PI to compute, and distributes this work to workers in the cluster of nodes (e.g. node 1 computes the first 10 digits, node 2 computes the next 10, etc).
 
 Then workers that connect to this master node can request work from the master node, compute partial PI results (I used the [Bailey–Borwein–Plouffe](https://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula) formula), and upload them to the master node, which merges the result and outputs PI!
 
