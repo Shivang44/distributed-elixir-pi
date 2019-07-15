@@ -10,24 +10,28 @@ defmodule DistributedPi.Worker do
 
  def start(digits) do
   IO.puts "Started worker"
-  D.set_context(%D.Context{D.get_context | precision: div(digits * 4, 3)})
+  D.set_context(%D.Context{D.get_context | precision: div(1000 * 4, 3)})
+
   master_pid = :global.whereis_name(:master)
   work(master_pid)
  end
 
  def work(pid) do
   case GenServer.call(pid, :get_work) do
-    :done -> System.stop(0)
+    :done ->
+      "Pi calculation completed."
     {worker_digits, power} ->
-      # IO.puts "Got more work"
       computed_work = pi(worker_digits, power)
-      IO.puts GenServer.call(pid, {:upload_work, computed_work})
+      GenServer.call(pid, {:upload_work, computed_work})
+      IO.puts "Computed and uploaded partial pi result."
       work(pid)
   end
  end
 
 
  def pi(digits, power) do
+  D.set_context(%D.Context{D.get_context | precision: div(1000 * 4, 3)})
+
   case length(digits) do
     0 -> D.new(0)
     _ ->
@@ -38,6 +42,8 @@ defmodule DistributedPi.Worker do
  end
 
  def kth(k, power) do
+  D.set_context(%D.Context{D.get_context | precision: div(1000 * 4, 3)})
+
    eight_k = D.mult(@d8, D.new(k))
 
    term_1 = D.div(@d4, D.add(eight_k, @d1))
