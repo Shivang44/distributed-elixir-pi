@@ -19,9 +19,9 @@ defmodule DistributedPi.Worker do
   case GenServer.call(pid, :get_work) do
     :done -> System.stop(0)
     {worker_digits, power} ->
-      IO.puts "Got more work"
+      # IO.puts "Got more work"
       computed_work = pi(worker_digits, power)
-      {:ok, _} = GenServer.call(pid, {:upload_work, computed_work})
+      IO.puts GenServer.call(pid, {:upload_work, computed_work})
       work(pid)
   end
  end
@@ -32,18 +32,12 @@ defmodule DistributedPi.Worker do
     0 -> D.new(0)
     _ ->
       [digit | tail] = digits
-      decimal_power = D.new(power)
-      digit |> kth(decimal_power) |> D.add(pi(tail, power * 16))
+      digit |> kth(power) |> D.add(pi(tail, D.mult(power, @d16)))
 
   end
-  # digits |> Enum.reduce(D.new(0), fn x, pi ->
-  #    D.add(pi, kth(x, power))
-  #  end)
-
  end
 
  def kth(k, power) do
-  coeff = D.new(power)
    eight_k = D.mult(@d8, D.new(k))
 
    term_1 = D.div(@d4, D.add(eight_k, @d1))
@@ -57,7 +51,7 @@ defmodule DistributedPi.Worker do
    |> D.sub(term_3)
    |> D.sub(term_4)
 
-   D.div(result, coeff)
+   D.div(result, power)
  end
 
 end

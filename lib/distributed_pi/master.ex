@@ -7,7 +7,7 @@ defmodule DistributedPi.Master do
     D.set_context(%D.Context{D.get_context | precision: div(digits * 4, 3)})
     pi = D.new(0)
     remaining_digits = Enum.to_list(0..digits)
-    power = 1 # Cache power of sixteens so we don't have to recompute
+    power = Decimal.new(1) # Cache power of sixteens so we don't have to recompute
     {:ok, pid} = GenServer.start_link(__MODULE__, {pi, remaining_digits, power})
     :global.register_name(:master, pid)
 
@@ -29,9 +29,10 @@ defmodule DistributedPi.Master do
         {:reply, :done, state}
         System.stop(0)
       _ ->
-        IO.puts("Giving more work")
+        # IO.puts("Giving more work")
         {worker_digits, next_digits} = Enum.split(remaining_digits, @work_size)
-        new_power = power * :math.pow(16, length(worker_digits) + 1)
+        multiply_power_by = Decimal.new(Kernel.inspect(:math.pow(16, length(worker_digits) + 1)))
+        new_power = D.mult(power, multiply_power_by)
         {:reply, {worker_digits, power}, {pi, next_digits, new_power}}
     end
   end
@@ -39,7 +40,6 @@ defmodule DistributedPi.Master do
   def handle_call({:upload_work, computed_work}, _from, state) do
     {pi, remaining_digits, power} = state
     new_pi = D.add(pi, computed_work)
-    IO.puts("Received computed work from worker. New pi: #{D.to_string(new_pi)}")
     {:reply, :ok, {new_pi, remaining_digits, power}}
   end
 
